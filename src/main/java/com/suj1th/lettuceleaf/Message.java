@@ -14,7 +14,7 @@ public class Message {
 	private final Envelope envelope;
     private final AMQP.BasicProperties properties;
     private final MessageBody body;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
     private final static Logger LOGGER = Logger.getLogger(Message.class);
 	
 	public Message(Delivery deliveredMessage) {
