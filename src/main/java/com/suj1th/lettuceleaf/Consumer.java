@@ -23,6 +23,11 @@ public class Consumer implements Runnable {
 	private RabbitHandler rabbitHandler;
 
 	private static final Logger LOGGER = Logger.getLogger(Consumer.class);
+	
+	
+	/**
+	 * @param queueInstance
+	 */
 	public Consumer(Queue queueInstance) {
 		
 		/*
