@@ -13,10 +13,14 @@ public class Worker {
 	private static final Logger LOGGER = Logger.getLogger(Worker.class);
 	
 	
+	/**
+	 * noargs constructor
+	 */
 	public Worker() {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public void execute(Message message) {	
 		String workerName = message.getWorkerName();
 		Method method = null;
@@ -24,6 +28,8 @@ public class Worker {
 			method = methodCache.get(workerName);
 			
 		}else{
+			
+			@SuppressWarnings("rawtypes")
 			Class worker = null;
 			
 			try {
