@@ -21,6 +21,7 @@ public class Consumer implements Runnable {
 	 * */
 	private QueueingConsumer queueingConsumer;
 	private RabbitHandler rabbitHandler;
+	private IThreadPoolManager threadPoolManager;
 
 	private static final Logger LOGGER = Logger.getLogger(Consumer.class);
 	
@@ -29,6 +30,8 @@ public class Consumer implements Runnable {
 	 * @param queueInstance
 	 */
 	public Consumer(Queue queueInstance) {
+		
+		super();
 		
 		/*
 		 * TODO
@@ -40,6 +43,7 @@ public class Consumer implements Runnable {
 		rabbitHandler = new RabbitHandler(queueInstance);
 		Channel channel = rabbitHandler.getChannel();
 		queueingConsumer = new QueueingConsumer(channel);
+		threadPoolManager = new ThreadPoolManager();
 		
 	}
 
@@ -48,7 +52,7 @@ public class Consumer implements Runnable {
 		QueueingConsumer.Delivery deliveredMessage =null;
 		while (true) {
 			try {
-				deliveredMessage = queueingConsumer.nextDelivery();
+				deliveredMessage = this.getQueueingConsumer().nextDelivery();
 			} catch (ShutdownSignalException e) {
 				LOGGER.error("Connection/Channel " + e.getReference()
 						+ " Shutdown to RabbitMQ", e);
@@ -64,8 +68,25 @@ public class Consumer implements Runnable {
 	}
 
 	private void callWorker(Message message) {
-		Worker worker = new Worker();
-		worker.execute(message.getBody());
+		Worker worker = new Worker(message.getBody());
+		this.getThreadPoolManager().execute(worker);
+		
+	}
+
+	public QueueingConsumer getQueueingConsumer() {
+		return queueingConsumer;
+	}
+
+	public void setQueueingConsumer(QueueingConsumer queueingConsumer) {
+		this.queueingConsumer = queueingConsumer;
+	}
+
+	public IThreadPoolManager getThreadPoolManager() {
+		return threadPoolManager;
+	}
+
+	public void setThreadPoolManager(IThreadPoolManager threadPoolManager) {
+		this.threadPoolManager = threadPoolManager;
 	}
 
 }

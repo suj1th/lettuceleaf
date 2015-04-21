@@ -7,21 +7,27 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class Worker {
+public class Worker implements Runnable{
 
 	private static Map<String, Method> methodCache = new HashMap<>();
 	private static final Logger LOGGER = Logger.getLogger(Worker.class);
+	private MessageBody message;
 	
 	
 	/**
-	 * noargs constructor
+	 * no-arg constructor
 	 */
 	public Worker() {
-		
+		super();
+	}
+	
+	public Worker(MessageBody message) {
+			super();
+			this.message=message;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(MessageBody message) {	
+	public void run() {	
 		String workerName = message.getTaskName();
 		Method method = null;
 		if(methodCache.containsKey(workerName)){
@@ -36,6 +42,7 @@ public class Worker {
 				worker = Class.forName(workerName);
 			} catch (ClassNotFoundException e) {
 				LOGGER.error("Class Not Found with name "+workerName, e);
+				Thread.currentThread().interrupt();
 				return;
 			}
 			
@@ -46,6 +53,7 @@ public class Worker {
 				return;
 			} catch (SecurityException e) {
 				LOGGER.error("Security Exception!!!",e);
+				Thread.currentThread().interrupt();
 				return;
 			}
 		}
@@ -60,6 +68,7 @@ public class Worker {
 			LOGGER.error("'Worker.work()' throws an unhandled exception",e);
 		}
 		
+		Thread.currentThread().interrupt();
 		return;
 	}
 
