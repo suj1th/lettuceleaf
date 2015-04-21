@@ -1,8 +1,6 @@
 package com.suj1th.lettuceleaf;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,15 +16,11 @@ public class Message{
     private final ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
     private final static Logger LOGGER = Logger.getLogger(Message.class);
     
-    @SuppressWarnings("rawtypes")
-	private Class type ;
-    
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	
 	public Message(Delivery deliveredMessage) {
-		type=(Class) (((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
 		MessageBody temp = null;
 		try {
-			temp = mapper.readValue(deliveredMessage.getBody(), type);
+			temp = mapper.readValue(deliveredMessage.getBody(), MessageBody.class);
 		} catch (IOException e) {
 			LOGGER.error("Jackson Parsing Error for Message "+ deliveredMessage, e);
 		}
