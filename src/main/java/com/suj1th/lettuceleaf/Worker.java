@@ -21,8 +21,8 @@ public class Worker {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void execute(Message message) {	
-		String workerName = message.getWorkerName();
+	public void execute(MessageBody message) {	
+		String workerName = message.getTaskName();
 		Method method = null;
 		if(methodCache.containsKey(workerName)){
 			method = methodCache.get(workerName);
@@ -36,14 +36,17 @@ public class Worker {
 				worker = Class.forName(workerName);
 			} catch (ClassNotFoundException e) {
 				LOGGER.error("Class Not Found with name "+workerName, e);
+				return;
 			}
 			
 			try {
 				method = worker.getMethod("work", Message.class);
 			} catch (NoSuchMethodException e) {
 				LOGGER.error("'work()' method not defined in Worker class "+workerName, e);
+				return;
 			} catch (SecurityException e) {
 				LOGGER.error("Security Exception!!!",e);
+				return;
 			}
 		}
 		
@@ -56,6 +59,8 @@ public class Worker {
 		} catch (InvocationTargetException e) {
 			LOGGER.error("'Worker.work()' throws an unhandled exception",e);
 		}
+		
+		return;
 	}
 
 }

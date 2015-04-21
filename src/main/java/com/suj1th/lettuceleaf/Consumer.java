@@ -65,7 +65,7 @@ public class Consumer implements Runnable {
 
 	private void callWorker(Message message) {
 		Worker worker = new Worker();
-		worker.execute(message);
+		worker.execute(message.getBody());
 	}
 
 }
